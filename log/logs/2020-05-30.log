@@ -1,0 +1,69 @@
+2020-05-30 01:47:09,763 test_5_foud.py setUp 21 INFO ---> aaaadfdsafasdfsdaf
+2020-05-30 01:47:10,057 test_5_foud.py setUp 21 INFO ---> aaaadfdsafasdfsdaf
+2020-05-30 21:47:07,719 test_5_foud.py setUp 21 INFO ---> aaaadfdsafasdfsdaf
+2020-05-30 21:47:08,019 test_5_foud.py setUp 21 INFO ---> aaaadfdsafasdfsdaf
+2020-05-30 23:49:59,206 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:49:59,211 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:49:59,314 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByMobile HTTP/1.1" 200 None
+2020-05-30 23:49:59,329 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:49:59,331 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:49:59,416 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByMobile HTTP/1.1" 200 None
+2020-05-30 23:49:59,418 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:49:59,420 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:49:59,492 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByMobile HTTP/1.1" 200 None
+2020-05-30 23:49:59,494 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:49:59,496 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:49:59,569 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByMobile HTTP/1.1" 200 None
+2020-05-30 23:49:59,571 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:49:59,574 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:49:59,647 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByMobile HTTP/1.1" 200 None
+2020-05-30 23:49:59,649 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:49:59,651 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:49:59,722 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByMobile HTTP/1.1" 200 None
+2020-05-30 23:49:59,724 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:49:59,726 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:49:59,808 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByMobile HTTP/1.1" 200 None
+2020-05-30 23:49:59,810 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:49:59,813 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:49:59,885 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByMobile HTTP/1.1" 200 None
+2020-05-30 23:49:59,886 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:49:59,888 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:49:59,959 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByMobile HTTP/1.1" 200 None
+2020-05-30 23:49:59,961 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:49:59,963 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:50:00,039 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByMobile HTTP/1.1" 200 None
+2020-05-30 23:50:00,041 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:50:00,043 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:50:00,129 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByEmail HTTP/1.1" 200 None
+2020-05-30 23:50:00,131 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:50:00,134 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:50:00,219 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByEmail HTTP/1.1" 200 None
+2020-05-30 23:50:00,221 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:50:00,223 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:50:00,317 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByEmail HTTP/1.1" 200 None
+2020-05-30 23:50:00,319 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:50:00,321 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:50:00,393 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByEmail HTTP/1.1" 200 None
+2020-05-30 23:50:00,395 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:50:00,397 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:50:00,467 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByEmail HTTP/1.1" 200 None
+2020-05-30 23:50:00,469 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:50:00,472 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:50:00,539 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByEmail HTTP/1.1" 200 None
+2020-05-30 23:50:00,541 test_1_login_excel.py setUp 25 DEBUG ---> 日志打印开始
+2020-05-30 23:50:00,543 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:50:00,609 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByEmail HTTP/1.1" 200 None
+2020-05-30 23:50:05,412 test_5_foud.py setUp 21 INFO ---> aaaadfdsafasdfsdaf
+2020-05-30 23:50:05,414 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:50:05,485 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByEmail?email=lidetao%40163.com&password=Aa111111&userType=1&clt=h5Wealth HTTP/1.1" 200 None
+2020-05-30 23:50:05,490 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:50:05,650 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-order/moneyFund/uploadFile/ HTTP/1.1" 200 None
+2020-05-30 23:50:05,654 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:50:05,723 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-order/moneyFund/generateBuyOrder HTTP/1.1" 200 None
+2020-05-30 23:50:05,731 test_5_foud.py setUp 21 INFO ---> aaaadfdsafasdfsdaf
+2020-05-30 23:50:05,741 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:50:05,824 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-user/user/loginByEmail?email=lidetao%40163.com&password=Aa111111&userType=1&clt=h5Wealth HTTP/1.1" 200 None
+2020-05-30 23:50:05,827 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:50:05,950 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-order/moneyFund/uploadFile/ HTTP/1.1" 200 None
+2020-05-30 23:50:05,955 connectionpool.py _new_conn 937 DEBUG ---> Starting new HTTPS connection (1): api.haitoutech.com:443
+2020-05-30 23:50:06,039 connectionpool.py _make_request 433 DEBUG ---> https://api.haitoutech.com:443 "POST /haitou-order/moneyFund/generateBuyOrder HTTP/1.1" 200 None

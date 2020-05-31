@@ -1,0 +1,2834 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>海投系统接口测试</title>
+    <meta name="generator" content="HTMLTestRunner 1.2.0"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script src="https://img.hcharts.cn/highcharts/highcharts.js"></script>
+    <script src="https://img.hcharts.cn/highcharts/modules/exporting.js"></script>
+    
+<style type="text/css" media="screen">
+body        { font-family: Microsoft YaHei;padding: 20px; font-size: 100%; }
+table       { font-size: 100%; }
+.table tbody tr td{
+            vertical-align: middle;
+        }
+/* -- heading ---------------------------------------------------------------------- */
+.heading .description, .attribute {
+    clear: both;
+}
+/* --- 失败和错误合集样式 -- Gelomen --- */
+.failCollection, .errorCollection {
+    width: 100px;
+    float: left;
+}
+#failCaseOl li {
+    color: red
+}
+#errorCaseOl li {
+    color: orange
+}
+/* --- 打开截图特效样式 -- Gelomen --- */
+.data-img{
+    cursor:pointer
+}
+.pic_looper{
+    width:100%;
+    height:100%;
+    position: fixed;
+    left: 0;
+    top:0;
+    opacity: 0.6;
+    background: #000;
+    display: none;
+    z-index: 100;
+}
+.pic_show{
+    width:100%;
+    position:fixed;
+    left:0;
+    top:0;
+    right:0;
+    bottom:0;
+    margin:auto;
+    text-align: center;
+    display: none;
+    z-index: 100;
+}
+.pic_box{
+    padding:10px;
+    width:90%;
+    height:90%;
+    margin:40px auto;
+    text-align: center;
+    overflow: hidden;
+}
+.pic_box img{
+    width: auto;
+    height: 100%;
+    -moz-box-shadow: 0px 0px 20px 0px #000;
+    -webkit-box-shadow: 0px 0px 20px 0px #000;
+    box-shadow: 0px 0px 20px 0px #000;
+}
+/* --- 饼状图div样式 -- Gelomen --- */
+#container {
+    width: 450px;
+    height: 300px;
+    float: left;
+}
+/* -- report ------------------------------------------------------------------------ */
+#total_row  { font-weight: bold; }
+.passCase   { color: #5cb85c; }
+.failCase   { color: #d9534f; font-weight: bold; }
+.errorCase  { color: #f0ad4e; font-weight: bold; }
+.hiddenRow  { display: none; }
+.testcase   { margin-left: 2em; }
+.screenshot:link { text-decoration: none;color: deeppink; }
+.screenshot:visited { text-decoration: none;color: deeppink; }
+.screenshot:hover { text-decoration: none;color: darkcyan; }
+.screenshot:active { text-decoration: none;color: deeppink; }
+</style>
+
+</head>
+<body >
+<script language="javascript" type="text/javascript">
+    $(function(){
+        // 修改 失败 和 错误 用例里对应按钮的颜色ClassName为动态加载 -- Gelomen
+    	$("button").each(function () {
+    	    var text = $(this).text();
+    	    if(text == "失败"){
+    	        $(this).addClass("btn-danger")
+            }else if(text == "错误") {
+                $(this).addClass("btn-warning")
+            }
+        });
+        // 给失败和错误合集加样式 -- Gelomen
+        var p_attribute = $("p.attribute");
+        p_attribute.eq(4).addClass("failCollection");
+        p_attribute.eq(5).addClass("errorCollection");
+        // 打开截图，放大，点击任何位置可以关闭图片  -- Gelomen
+        $(".screenshot").click(function(){
+            var img = $(this).attr("img");
+            $('.pic_show img').attr('src', img);
+            $('.pic_looper').fadeIn(200);
+            $('.pic_show').fadeIn(200);
+            var browserHeight = $(window).height();
+            var pic_boxHeight = $(".pic_box").height();
+            var top = (browserHeight - pic_boxHeight)/2;
+            $('.pic_box').css("margin-top", top + "px")
+        });
+        $('.pic_looper, .pic_show').click(function(){
+            $('.pic_looper').fadeOut(200);
+            $('.pic_show').fadeOut(200)
+        });
+        var browserWidth = $(window).width();
+        var margin_left = browserWidth/2 - 450;
+        if(margin_left <= 240){
+            $("#container").css("margin", "auto");
+        }else {
+            $("#container").css("margin-left", margin_left + "px");
+        }
+        $(window).resize(function(){
+            // 改变窗口大小时，自动改变图片与顶部的距离  -- Gelomen
+            var browserHeight = $(window).height();
+            var pic_boxHeight = $(".pic_box").height();
+            var top = (browserHeight - pic_boxHeight)/2;
+            $('.pic_box').css("margin-top", top + "px");
+            // 改变窗口大小时，自动改变饼图的边距  -- Gelomen
+            var browserWidth = $(window).width();
+            var margin_left = browserWidth/2 - 450;
+            if(margin_left <= 240){
+                $("#container").css("margin", "auto");
+            }else {
+                $("#container").css("margin-left", margin_left + "px");
+            }
+        });
+        // 距离顶部超过浏览器窗口一屏时，回到顶部按钮才出现  -- Gelomen
+        $(window).scroll(function(){
+            var browserHeight = $(window).height();
+            var top = $(window).scrollTop();
+            if(top >= browserHeight){
+                $("#toTop").css("display", "block")
+            }else {
+                $("#toTop").css("display", "none")
+            }
+        })
+        // 增加回到顶部过程的动画，以看上去不会那么生硬  -- Gelomen
+        $("#toTop").click(function() {
+            $("html,body").animate({"scrollTop":0}, 700)
+        })
+        // 增加饼状图  -- Gelomen
+        $('#container').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                spacing : [0, 0, 0, 0]
+            },
+            credits: {
+                enabled: false
+            },
+            navigation: {
+                buttonOptions: {
+                    enabled: false
+                }
+            },
+            title: {
+                floating:true,
+                text: '测试结果占比'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    colors: ['#81ca9d', '#f16d7e', '#fdc68c'],
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                        }
+                    },
+                    point: {
+                        events: {
+                            mouseOver: function(e) {  // 鼠标滑过时动态更新标题
+                                chart.setTitle({
+                                    text: e.target.name+ '\t'+ e.target.y + ' 个'
+                                });
+                            }
+                        }
+                    }
+                }
+            },
+            series: [{
+                type: 'pie',
+                innerSize: '80%',
+                name: '比例',
+                data: [
+                    ['通过', 51],
+                    {
+                        name: '失败',
+                        y: 0,
+                        sliced: true,
+                        selected: true
+                    },
+                    ['错误', 32]
+                ]
+            }]
+        }, function(c) {
+            // 环形图圆心
+            var centerY = c.series[0].center[1],
+                titleHeight = parseInt(c.title.styles.fontSize);
+            c.setTitle({
+                y:centerY + titleHeight/2
+            });
+            chart = c;
+        });
+        // 查看 失败 和 错误 合集链接文字切换  -- Gelomen
+        $(".showDetail").click(function () {
+            if($(this).html() == "点击查看"){
+                $(this).html("点击收起")
+            }else {
+                $(this).html("点击查看")
+            }
+        })
+    });
+output_list = Array();
+/*level 调整增加只显示通过用例的分类 --Findyou / 修复筛选显示bug --Gelomen
+0:Summary //all hiddenRow
+1:Failed  //pt&et hiddenRow, ft none
+2:Pass    //pt none, ft&et hiddenRow
+3:Error   //pt&ft hiddenRow, et none
+4:All     //all none
+*/
+function showCase(level) {
+    trs = document.getElementsByTagName("tr");
+    for (var i = 0; i < trs.length; i++) {
+        tr = trs[i];
+        id = tr.id;
+        if (id.substr(0,2) == 'ft') {
+            if (level == 2 || level == 0 || level == 3) {
+                tr.className = 'hiddenRow';
+            }
+            else {
+                tr.className = '';
+                // 切换筛选时只显示预览   -- Gelomen
+                $("div[id^='div_ft']").attr("class", "collapse");
+                $("div[id^='div_et']").attr("class", "collapse");
+            }
+        }
+        if (id.substr(0,2) == 'pt') {
+            if (level == 1 || level == 0 || level == 3) {
+                tr.className = 'hiddenRow';
+            }
+            else {
+                tr.className = '';
+                // 切换筛选时只显示预览   -- Gelomen
+                $("div[id^='div_ft']").attr("class", "collapse");
+                $("div[id^='div_et']").attr("class", "collapse");
+            }
+        }
+        if (id.substr(0,2) == 'et') {
+            if (level == 1 || level == 0 || level == 2) {
+                tr.className = 'hiddenRow';
+            }
+            else {
+                tr.className = '';
+                // 切换筛选时只显示预览   -- Gelomen
+                $("div[id^='div_ft']").attr("class", "collapse");
+                $("div[id^='div_et']").attr("class", "collapse");
+            }
+        }
+    }
+    //加入【详细】切换文字变化 --Findyou
+    detail_class=document.getElementsByClassName('detail');
+	//console.log(detail_class.length)
+	if (level == 3) {
+		for (var i = 0; i < detail_class.length; i++){
+			detail_class[i].innerHTML="收起"
+		}
+	}
+	else{
+			for (var i = 0; i < detail_class.length; i++){
+			detail_class[i].innerHTML="详细"
+		}
+	}
+}
+function showClassDetail(cid, count) {
+    var id_list = Array(count);
+    var toHide = 1;
+    for (var i = 0; i < count; i++) {
+        //ID修改 点 为 下划线 -Findyou
+        tid0 = 't' + cid.substr(1) + '_' + (i+1);
+        tid = 'f' + tid0;
+        tr = document.getElementById(tid);
+        if (!tr) {
+            tid = 'p' + tid0;
+            tr = document.getElementById(tid);
+            if (!tr) {
+                tid = 'e' + tid0;
+                tr = document.getElementById(tid);
+            }
+        }
+        id_list[i] = tid;
+        if (tr.className) {
+            toHide = 0;
+        }
+    }
+    for (var i = 0; i < count; i++) {
+        tid = id_list[i];
+        //修改点击无法收起的BUG，加入【详细】切换文字变化 --Findyou
+        if (toHide) {
+            document.getElementById(tid).className = 'hiddenRow';
+            document.getElementById(cid).innerText = "详细"
+        }
+        else {
+            document.getElementById(tid).className = '';
+            document.getElementById(cid).innerText = "收起"
+        }
+    }
+}
+function html_escape(s) {
+    s = s.replace(/&/g,'&amp;');
+    s = s.replace(/</g,'&lt;');
+    s = s.replace(/>/g,'&gt;');
+    return s;
+}
+</script>
+<div class='pic_looper'></div> <div class='pic_show'><div class='pic_box'><img src=''/></div> </div>
+<div class='heading'>
+<div style="width: 650px; float: left;">
+    <h1 style="font-family: Microsoft YaHei">海投系统接口测试</h1>
+    <p class='attribute'><strong>测试人员 : </strong> QA</p>
+<p class='attribute'><strong>开始时间 : </strong> 2020-05-31 03:45:05</p>
+<p class='attribute'><strong>合计耗时 : </strong> 0:00:07.131335</p>
+<p class='attribute'><strong>测试结果 : </strong> 共 83，通过 51，错误 32，通过率 = 61.45%</p>
+<p class='attribute'><strong>失败用例合集 : </strong> <ol style='float: left;'>无</ol></p>
+<p class='attribute'><strong>错误用例合集 : </strong> <div class='panel-default' style='float: left;'><a class='showDetail' data-toggle='collapse' href='#errorCaseOl' style='text-decoration: none;'>点击查看</a></div><ol id='errorCaseOl' class='collapse' style='float: left;'><li>test1_1___邮箱用户查询美亚信贷产品____https___api_haitoutech_com_____haitou_product_product_dailyProductList____post____code____0000____151____340____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_2_product.Test_Product)</li><li>test1_2___手机号用户查询美亚信贷产品____https___api_haitoutech_com_____haitou_product_product_dailyProductList____post____code____0000____151____340____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____ (test_2_product.Test_Product)</li><li>test1_3___邮箱用户查询美车贷产品____https___api_haitoutech_com_____haitou_product_product_dailyProductList____post____code____0000____151____342____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_2_product.Test_Product)</li><li>test1_4___手机号用户查询美车贷产品____https___api_haitoutech_com_____haitou_product_product_dailyProductList____post____code____0000____151____342____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____ (test_2_product.Test_Product)</li><li>test2_1___订单确认页_邮箱用户查询美亚信贷产品____https___api_haitoutech_com_____haitou_order_order_confirmOrderInfo____post____code____0000____151____340____10000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_3_OrderConfirm.Test_Order_Confirm)</li><li>test2_2___订单确认页_手机号用户查询美亚信贷产品____https___api_haitoutech_com_____haitou_order_order_confirmOrderInfo____post____code____0000____151____340____10000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____ (test_3_OrderConfirm.Test_Order_Confirm)</li><li>test2_3___订单确认页_邮箱用户查询美车贷产品____https___api_haitoutech_com_____haitou_order_order_confirmOrderInfo____post____code____0000____151____342____10000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_3_OrderConfirm.Test_Order_Confirm)</li><li>test2_4___订单确认页_手机号用户查询美车贷产品____https___api_haitoutech_com_____haitou_order_order_confirmOrderInfo____post____code____0000____151____342____10000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____ (test_3_OrderConfirm.Test_Order_Confirm)</li><li>test1_01___邮箱用户查询固收账户____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForRegularEarnings____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_02___手机号用户查询固收账户____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForRegularEarnings____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_03___邮箱用户查询固收_基金总额____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForAll____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_04___手机号用户查询固收_基金总额____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForAll____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_05___邮箱查询余额管理计划用户设置____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserSetting____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_06___手机查询余额管理计划用户设置____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserSetting____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_07___邮箱货币基金查询订单列表____https___api_haitoutech_com_____haitou_order_moneyFund_queryOrderList____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_08___手机货币基金查询订单列表____https___api_haitoutech_com_____haitou_order_moneyFund_queryOrderList____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_09___邮箱货币基金用户账户信息____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserAccount____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_10___手机货币基金用户账户信息____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserAccount____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_11___邮箱查询货币基金账户收益列表____https___api_haitoutech_com_____haitou_order_moneyFund_queryAccountEarningsList____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_12___手机查询货币基金账户收益列表____https___api_haitoutech_com_____haitou_order_moneyFund_queryAccountEarningsList____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_13___邮箱查询用户信息____https___api_haitoutech_com_____haitou_user_userInfo_queryUserInfoForWealth____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_14___手机查询用户信息____https___api_haitoutech_com_____haitou_user_userInfo_queryUserInfoForWealth____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_15___邮箱查询用户信息____https___api_haitoutech_com_____haitou_user_userInfo_queryAssetSummary____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_16___手机查询用户信息____https___api_haitoutech_com_____haitou_user_userInfo_queryAssetSummary____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_17___邮箱查询站内信____https___api_haitoutech_com______haitou_user_userInfo_queryUserMessageList____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_18___手机查询站内信____https___api_haitoutech_com______haitou_user_userInfo_queryUserMessageList____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_19___上传接口测试_正确____https___api_haitoutech_com_____haitou_order_moneyFund_uploadFile____post____code____9999____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test1_20___上传接口____https___api_haitoutech_com_____haitou_order_moneyFund_uploadFile____post____code____9999____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_3_count.Test_Count)</li><li>test2_1___邮箱用户查询美亚信贷产品____https___api_haitoutech_com_____haitou_order_order_generateOrder____haitou_order_order_cancelOrder____post____code____0000____151____340____10000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_4_OrderT.Test_OrderT)</li><li>test2_2___邮箱用户查询美车贷产品____https___api_haitoutech_com_____haitou_order_order_generateOrder____haitou_order_order_cancelOrder____post____code____0000____151____340____10000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_4_OrderT.Test_OrderT)</li><li>test2_3___手机号用户查询美亚信贷产品____https___api_haitoutech_com_____haitou_order_order_generateOrder____haitou_order_order_cancelOrder____post____code____0000____151____340____10000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_4_OrderT.Test_OrderT)</li><li>test2_4___手机号用户查询美车贷产品____https___api_haitoutech_com_____haitou_order_order_generateOrder____haitou_order_order_cancelOrder____post____code____0000____151____340____10000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____ (test_4_OrderT.Test_OrderT)</li></ol></p>
+
+    <p class='description'>以下是接口测试结果</p>
+</div>
+<div id="container"></div>
+</div>
+
+
+<div style="width: 500px; clear: both;">
+<p id='show_detail_line'>
+<a class="btn btn-primary" href='javascript:showCase(0)'>概要{ 61.45% }</a>
+<a class="btn btn-success" href='javascript:showCase(2)'>通过{ 51 }</a>
+<a class="btn btn-danger" href='javascript:showCase(1)'>失败{ 0 }</a>
+<a class="btn btn-warning" href='javascript:showCase(3)'>错误{ 32 }</a>
+<a class="btn btn-info" href='javascript:showCase(4)'>所有{ 83 }</a>
+</p>
+</div>
+<table id='result_table' class="table table-condensed table-bordered table-hover">
+<colgroup>
+<col align='left' style="width: 300px;"/>
+<col align='right' style="width: 300px;"/>
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' style="width: 200px;"/>
+</colgroup>
+<tr id='header_row' class="text-center success" style="font-weight: bold;font-size: 14px;">
+    <td>用例集/测试用例</td>
+    <td>说明</td>
+    <td>总计</td>
+    <td>通过</td>
+    <td>失败</td>
+    <td>错误</td>
+    <td>耗时</td>
+    <td>详细</td>
+</tr>
+
+<tr class='passClass warning'>
+    <td>Test_Login</td>
+    <td></td>
+    <td class="text-center">17</td>
+    <td class="text-center">17</td>
+    <td class="text-center">0</td>
+    <td class="text-center">0</td>
+    <td class="text-center">1.26秒</td>
+    <td class="text-center"><a href="javascript:showClassDetail('c1',17)" class="detail" id='c1'>详细</a></td>
+</tr>
+
+    <tr id='pt1_1' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_01___手机号正确的账户密码____https___api_haitoutech_com_haitou_user_user_____loginByMobile____code____0000____post______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_1' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_1'>通过</button>
+        <div id='div_pt1_1' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_1' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_1'>通过</button>
+        <div id='div_pt1_1' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_1: 测试开始！
+{'mobile': '18610806332', 'password': 'Aa111111', 'regionalCode': '+86', 'userType': '1', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'code': '0000', 'data': '4f3cc1f2-0cb4-4024-b8e3-2f157db7e18b'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_2' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_02___手机号正确的账户错误密码____https___api_haitoutech_com_haitou_user_user_____loginByMobile____code____9999____post______mobile___18610806332___password___Aa1111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_2' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_2'>通过</button>
+        <div id='div_pt1_2' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_2' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_2'>通过</button>
+        <div id='div_pt1_2' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_2: 测试开始！
+{'mobile': '18610806332', 'password': 'Aa1111111', 'regionalCode': '+86', 'userType': '1', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '手机号或密码不正确', 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_3' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_03___手机号为空____https___api_haitoutech_com_haitou_user_user_____loginByMobile____code____9999____post______mobile______password___Aa1111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_3' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_3'>通过</button>
+        <div id='div_pt1_3' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_3' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_3'>通过</button>
+        <div id='div_pt1_3' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_3: 测试开始！
+{'mobile': '', 'password': 'Aa1111111', 'regionalCode': '+86', 'userType': '1', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '手机号不能为空', 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_4' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_04___手机号错误____https___api_haitoutech_com_haitou_user_user_____loginByMobile____code____9999____post______mobile___18610806332122___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_4' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_4'>通过</button>
+        <div id='div_pt1_4' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_4' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_4'>通过</button>
+        <div id='div_pt1_4' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_4: 测试开始！
+{'mobile': '18610806332122', 'password': 'Aa111111', 'regionalCode': '+86', 'userType': '1', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '手机号或密码不正确', 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_5' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_05___密码为空____https___api_haitoutech_com_haitou_user_user_____loginByMobile____code____9999____post______mobile___18610806332___password______regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_5' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_5'>通过</button>
+        <div id='div_pt1_5' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_5' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_5'>通过</button>
+        <div id='div_pt1_5' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_5: 测试开始！
+{'mobile': '18610806332', 'password': '', 'regionalCode': '+86', 'userType': '1', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': None, 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_6' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_06___存在的手机号错误密码____https___api_haitoutech_com_haitou_user_user_____loginByMobile____code____9999____post______mobile___18610806332___password___fasfsf___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_6' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_6'>通过</button>
+        <div id='div_pt1_6' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_6' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_6'>通过</button>
+        <div id='div_pt1_6' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_6: 测试开始！
+{'mobile': '18610806332', 'password': 'fasfsf', 'regionalCode': '+86', 'userType': '1', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': None, 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_7' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_07___不存在的手机号____https___api_haitoutech_com_haitou_user_user_____loginByMobile____code____9999____post______mobile___18610802222___password___fasfsf___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_7' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_7'>通过</button>
+        <div id='div_pt1_7' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_7' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_7'>通过</button>
+        <div id='div_pt1_7' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_7: 测试开始！
+{'mobile': '18610802222', 'password': 'fasfsf', 'regionalCode': '+86', 'userType': '1', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '手机号或密码不正确', 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_8' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_08___国别号为空____https___api_haitoutech_com_haitou_user_user_____loginByMobile____code____9999____post______mobile___18610806332___password___Aa111111___regionalCode______userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_8' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_8'>通过</button>
+        <div id='div_pt1_8' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_8' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_8'>通过</button>
+        <div id='div_pt1_8' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_8: 测试开始！
+{'mobile': '18610806332', 'password': 'Aa111111', 'regionalCode': '', 'userType': '1', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': None, 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_9' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_09___用户类别错误____https___api_haitoutech_com_haitou_user_user_____loginByMobile____code____9999____post______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1111___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_9' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_9'>通过</button>
+        <div id='div_pt1_9' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_9' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_9'>通过</button>
+        <div id='div_pt1_9' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_9: 测试开始！
+{'mobile': '18610806332', 'password': 'Aa111111', 'regionalCode': '+86', 'userType': '1111', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': None, 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_10' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_10___用户端错误____https___api_haitoutech_com_haitou_user_user_____loginByMobile____code____9999____post______mobile___18610806332___password___Aa111111___regionalCode______userType___1___clt___21211212____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_10' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_10'>通过</button>
+        <div id='div_pt1_10' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_10' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_10'>通过</button>
+        <div id='div_pt1_10' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_10: 测试开始！
+{'mobile': '18610806332', 'password': 'Aa111111', 'regionalCode': '', 'userType': '1', 'clt': '21211212'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': None, 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_11' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_11___邮箱正确的账户密码____https___api_haitoutech_com_haitou_user_user_____loginByEmail____code____0000____post______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_11' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_11'>通过</button>
+        <div id='div_pt1_11' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_11' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_11'>通过</button>
+        <div id='div_pt1_11' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_11: 测试开始！
+{'email': 'lidetao@163.com', 'password': 'Aa111111', 'userType': '1', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'code': '0000', 'data': '6d09f3e0-a398-45b1-8dbb-2f99bd41d6c3'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_12' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_12___邮箱正确的账户错误密码____https___api_haitoutech_com_haitou_user_user_____loginByEmail____code____9999____post______email___lidetao_163_com___password___Aa1111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_12' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_12'>通过</button>
+        <div id='div_pt1_12' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_12' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_12'>通过</button>
+        <div id='div_pt1_12' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_12: 测试开始！
+{'email': 'lidetao@163.com', 'password': 'Aa1111111', 'userType': '1', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '电子邮箱地址或登录密码不正确', 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_13' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_13___邮箱不存在____https___api_haitoutech_com_haitou_user_user_____loginByEmail____code____9999____post______email___363613636_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_13' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_13'>通过</button>
+        <div id='div_pt1_13' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_13' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_13'>通过</button>
+        <div id='div_pt1_13' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_13: 测试开始！
+{'email': '363613636@163.com', 'password': 'Aa111111', 'userType': '1', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '电子邮箱地址或登录密码不正确', 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_14' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_14___邮箱为空____https___api_haitoutech_com_haitou_user_user_____loginByEmail____code____9999____post______email______password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_14' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_14'>通过</button>
+        <div id='div_pt1_14' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_14' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_14'>通过</button>
+        <div id='div_pt1_14' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_14: 测试开始！
+{'email': '', 'password': 'Aa111111', 'userType': '1', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '电子邮箱地址不能为空', 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_15' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_15___密码为空____https___api_haitoutech_com_haitou_user_user_____loginByEmail____code____9999____post______email___lidetao_163_com___password_______userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_15' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_15'>通过</button>
+        <div id='div_pt1_15' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_15' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_15'>通过</button>
+        <div id='div_pt1_15' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_15: 测试开始！
+{'email': 'lidetao@163.com', 'password': '', 'userType': '1', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': None, 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_16' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_16___用户类别错误____https___api_haitoutech_com_haitou_user_user_____loginByEmail____code____9999____post______email___lidetao_163_com___password___Aa111111____userType______clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_16' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_16'>通过</button>
+        <div id='div_pt1_16' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_16' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_16'>通过</button>
+        <div id='div_pt1_16' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_16: 测试开始！
+{'email': 'lidetao@163.com', 'password': 'Aa111111', 'userType': '', 'clt': 'h5Wealth'}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': None, 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt1_17' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_17___用户端错误____https___api_haitoutech_com_haitou_user_user_____loginByEmail____code____9999____post______email___lidetao_163_com___password___Aa111111____userType___1___clt_______</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt1_17' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_17'>通过</button>
+        <div id='div_pt1_17' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt1_17' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt1_17'>通过</button>
+        <div id='div_pt1_17' class="collapse in">
+        <pre style="text-align:left">
+        
+pt1_17: 测试开始！
+{'email': 'lidetao@163.com', 'password': 'Aa111111', 'userType': '1', 'clt': ''}
+&lt;class 'dict'&gt;
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': None, 'code': '9999'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+<tr class='errorClass warning'>
+    <td>Test_Product</td>
+    <td>产品列表页</td>
+    <td class="text-center">4</td>
+    <td class="text-center">0</td>
+    <td class="text-center">0</td>
+    <td class="text-center">4</td>
+    <td class="text-center">0.27秒</td>
+    <td class="text-center"><a href="javascript:showClassDetail('c2',4)" class="detail" id='c2'>详细</a></td>
+</tr>
+
+    <tr id='et2_1' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_1___邮箱用户查询美亚信贷产品____https___api_haitoutech_com_____haitou_product_product_dailyProductList____post____code____0000____151____340____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et2_1' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et2_1'>错误</button>
+        <div id='div_et2_1' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et2_1' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et2_1'>错误</button>
+        <div id='div_et2_1' class="collapse in">
+        <pre style="text-align:left">
+        
+et2_1: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_2_product.py", line 30, in test1
+    par = {'clt':clt,'returnType':returnType,'productType':productType,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et2_2' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_2___手机号用户查询美亚信贷产品____https___api_haitoutech_com_____haitou_product_product_dailyProductList____post____code____0000____151____340____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et2_2' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et2_2'>错误</button>
+        <div id='div_et2_2' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et2_2' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et2_2'>错误</button>
+        <div id='div_et2_2' class="collapse in">
+        <pre style="text-align:left">
+        
+et2_2: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_2_product.py", line 30, in test1
+    par = {'clt':clt,'returnType':returnType,'productType':productType,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et2_3' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_3___邮箱用户查询美车贷产品____https___api_haitoutech_com_____haitou_product_product_dailyProductList____post____code____0000____151____342____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et2_3' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et2_3'>错误</button>
+        <div id='div_et2_3' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et2_3' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et2_3'>错误</button>
+        <div id='div_et2_3' class="collapse in">
+        <pre style="text-align:left">
+        
+et2_3: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_2_product.py", line 30, in test1
+    par = {'clt':clt,'returnType':returnType,'productType':productType,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et2_4' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_4___手机号用户查询美车贷产品____https___api_haitoutech_com_____haitou_product_product_dailyProductList____post____code____0000____151____342____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et2_4' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et2_4'>错误</button>
+        <div id='div_et2_4' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et2_4' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et2_4'>错误</button>
+        <div id='div_et2_4' class="collapse in">
+        <pre style="text-align:left">
+        
+et2_4: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_2_product.py", line 30, in test1
+    par = {'clt':clt,'returnType':returnType,'productType':productType,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+<tr class='errorClass warning'>
+    <td>Test_Order_Confirm</td>
+    <td>订单确认页</td>
+    <td class="text-center">4</td>
+    <td class="text-center">0</td>
+    <td class="text-center">0</td>
+    <td class="text-center">4</td>
+    <td class="text-center">0.27秒</td>
+    <td class="text-center"><a href="javascript:showClassDetail('c3',4)" class="detail" id='c3'>详细</a></td>
+</tr>
+
+    <tr id='et3_1' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test2_1___订单确认页_邮箱用户查询美亚信贷产品____https___api_haitoutech_com_____haitou_order_order_confirmOrderInfo____post____code____0000____151____340____10000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et3_1' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et3_1'>错误</button>
+        <div id='div_et3_1' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et3_1' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et3_1'>错误</button>
+        <div id='div_et3_1' class="collapse in">
+        <pre style="text-align:left">
+        
+et3_1: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_OrderConfirm.py", line 55, in test2
+    token = base.get_token_ok(doc1, login)
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et3_2' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test2_2___订单确认页_手机号用户查询美亚信贷产品____https___api_haitoutech_com_____haitou_order_order_confirmOrderInfo____post____code____0000____151____340____10000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et3_2' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et3_2'>错误</button>
+        <div id='div_et3_2' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et3_2' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et3_2'>错误</button>
+        <div id='div_et3_2' class="collapse in">
+        <pre style="text-align:left">
+        
+et3_2: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_OrderConfirm.py", line 55, in test2
+    token = base.get_token_ok(doc1, login)
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et3_3' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test2_3___订单确认页_邮箱用户查询美车贷产品____https___api_haitoutech_com_____haitou_order_order_confirmOrderInfo____post____code____0000____151____342____10000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et3_3' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et3_3'>错误</button>
+        <div id='div_et3_3' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et3_3' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et3_3'>错误</button>
+        <div id='div_et3_3' class="collapse in">
+        <pre style="text-align:left">
+        
+et3_3: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_OrderConfirm.py", line 55, in test2
+    token = base.get_token_ok(doc1, login)
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et3_4' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test2_4___订单确认页_手机号用户查询美车贷产品____https___api_haitoutech_com_____haitou_order_order_confirmOrderInfo____post____code____0000____151____342____10000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et3_4' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et3_4'>错误</button>
+        <div id='div_et3_4' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et3_4' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et3_4'>错误</button>
+        <div id='div_et3_4' class="collapse in">
+        <pre style="text-align:left">
+        
+et3_4: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_OrderConfirm.py", line 55, in test2
+    token = base.get_token_ok(doc1, login)
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+<tr class='errorClass warning'>
+    <td>Test_Count</td>
+    <td>各查询页面</td>
+    <td class="text-center">48</td>
+    <td class="text-center">28</td>
+    <td class="text-center">0</td>
+    <td class="text-center">20</td>
+    <td class="text-center">3.23秒</td>
+    <td class="text-center"><a href="javascript:showClassDetail('c4',48)" class="detail" id='c4'>详细</a></td>
+</tr>
+
+    <tr id='et4_1' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_01___邮箱用户查询固收账户____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForRegularEarnings____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_1' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_1'>错误</button>
+        <div id='div_et4_1' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_1' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_1'>错误</button>
+        <div id='div_et4_1' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_1: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_2' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_02___手机号用户查询固收账户____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForRegularEarnings____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_2' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_2'>错误</button>
+        <div id='div_et4_2' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_2' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_2'>错误</button>
+        <div id='div_et4_2' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_2: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_3' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_03___邮箱用户查询固收_基金总额____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForAll____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_3' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_3'>错误</button>
+        <div id='div_et4_3' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_3' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_3'>错误</button>
+        <div id='div_et4_3' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_3: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_4' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_04___手机号用户查询固收_基金总额____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForAll____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_4' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_4'>错误</button>
+        <div id='div_et4_4' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_4' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_4'>错误</button>
+        <div id='div_et4_4' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_4: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_5' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_05___邮箱查询余额管理计划用户设置____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserSetting____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_5' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_5'>错误</button>
+        <div id='div_et4_5' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_5' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_5'>错误</button>
+        <div id='div_et4_5' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_5: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_6' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_06___手机查询余额管理计划用户设置____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserSetting____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_6' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_6'>错误</button>
+        <div id='div_et4_6' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_6' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_6'>错误</button>
+        <div id='div_et4_6' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_6: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_7' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_07___邮箱货币基金查询订单列表____https___api_haitoutech_com_____haitou_order_moneyFund_queryOrderList____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_7' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_7'>错误</button>
+        <div id='div_et4_7' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_7' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_7'>错误</button>
+        <div id='div_et4_7' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_7: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_8' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_08___手机货币基金查询订单列表____https___api_haitoutech_com_____haitou_order_moneyFund_queryOrderList____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_8' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_8'>错误</button>
+        <div id='div_et4_8' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_8' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_8'>错误</button>
+        <div id='div_et4_8' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_8: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_9' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_09___邮箱货币基金用户账户信息____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserAccount____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_9' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_9'>错误</button>
+        <div id='div_et4_9' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_9' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_9'>错误</button>
+        <div id='div_et4_9' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_9: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_10' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_10___手机货币基金用户账户信息____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserAccount____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_10' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_10'>错误</button>
+        <div id='div_et4_10' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_10' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_10'>错误</button>
+        <div id='div_et4_10' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_10: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_11' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_11___邮箱查询货币基金账户收益列表____https___api_haitoutech_com_____haitou_order_moneyFund_queryAccountEarningsList____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_11' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_11'>错误</button>
+        <div id='div_et4_11' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_11' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_11'>错误</button>
+        <div id='div_et4_11' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_11: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_12' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_12___手机查询货币基金账户收益列表____https___api_haitoutech_com_____haitou_order_moneyFund_queryAccountEarningsList____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_12' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_12'>错误</button>
+        <div id='div_et4_12' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_12' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_12'>错误</button>
+        <div id='div_et4_12' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_12: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_13' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_13___邮箱查询用户信息____https___api_haitoutech_com_____haitou_user_userInfo_queryUserInfoForWealth____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_13' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_13'>错误</button>
+        <div id='div_et4_13' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_13' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_13'>错误</button>
+        <div id='div_et4_13' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_13: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_14' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_14___手机查询用户信息____https___api_haitoutech_com_____haitou_user_userInfo_queryUserInfoForWealth____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_14' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_14'>错误</button>
+        <div id='div_et4_14' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_14' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_14'>错误</button>
+        <div id='div_et4_14' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_14: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_15' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_15___邮箱查询用户信息____https___api_haitoutech_com_____haitou_user_userInfo_queryAssetSummary____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_15' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_15'>错误</button>
+        <div id='div_et4_15' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_15' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_15'>错误</button>
+        <div id='div_et4_15' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_15: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_16' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_16___手机查询用户信息____https___api_haitoutech_com_____haitou_user_userInfo_queryAssetSummary____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_16' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_16'>错误</button>
+        <div id='div_et4_16' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_16' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_16'>错误</button>
+        <div id='div_et4_16' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_16: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_17' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_17___邮箱查询站内信____https___api_haitoutech_com______haitou_user_userInfo_queryUserMessageList____post____code____0000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_17' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_17'>错误</button>
+        <div id='div_et4_17' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_17' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_17'>错误</button>
+        <div id='div_et4_17' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_17: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_18' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_18___手机查询站内信____https___api_haitoutech_com______haitou_user_userInfo_queryUserMessageList____post____code____0000____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_18' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_18'>错误</button>
+        <div id='div_et4_18' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_18' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_18'>错误</button>
+        <div id='div_et4_18' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_18: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_19' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_19___上传接口测试_正确____https___api_haitoutech_com_____haitou_order_moneyFund_uploadFile____post____code____9999____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_19' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_19'>错误</button>
+        <div id='div_et4_19' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_19' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_19'>错误</button>
+        <div id='div_et4_19' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_19: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et4_20' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test1_20___上传接口____https___api_haitoutech_com_____haitou_order_moneyFund_uploadFile____post____code____9999____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et4_20' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et4_20'>错误</button>
+        <div id='div_et4_20' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et4_20' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et4_20'>错误</button>
+        <div id='div_et4_20' class="collapse in">
+        <pre style="text-align:left">
+        
+et4_20: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_3_count.py", line 29, in test1
+    par = {'clt':clt,'token':base.get_token_ok(doc1,login)}
+  File "E:\Test\Haitou_win_git\public\base.py", line 142, in get_token_ok
+    token = resp.json()['data']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_21' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_01___用户查询固收账户_token错误____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForRegularEarnings____post____code____4000____h5Wealth____fasdfsafds__</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_21' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_21'>通过</button>
+        <div id='div_pt4_21' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_21' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_21'>通过</button>
+        <div id='div_pt4_21' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_21: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_22' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_02___用户查询固收_基金总额_token错误____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForAll____post____code____4000____h5Wealth____fasdfsafds__</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_22' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_22'>通过</button>
+        <div id='div_pt4_22' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_22' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_22'>通过</button>
+        <div id='div_pt4_22' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_22: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_23' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_03___查询余额管理计划用户设置_token错误____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserSetting____post____code____4000____h5Wealth____fasdfsafds__</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_23' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_23'>通过</button>
+        <div id='div_pt4_23' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_23' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_23'>通过</button>
+        <div id='div_pt4_23' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_23: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_24' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_04___货币基金查询订单列表_token错误____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserAccount____post____code____4000____h5Wealth____fasdfsafds__</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_24' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_24'>通过</button>
+        <div id='div_pt4_24' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_24' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_24'>通过</button>
+        <div id='div_pt4_24' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_24: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_25' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_05___货币基金用户账户信息_token错误____https___api_haitoutech_com_____haitou_order_moneyFund_queryOrderList____post____code____4000____h5Wealth____fasdfsafds__</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_25' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_25'>通过</button>
+        <div id='div_pt4_25' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_25' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_25'>通过</button>
+        <div id='div_pt4_25' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_25: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_26' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_06___查询货币基金账户收益列表_token错误____https___api_haitoutech_com_____haitou_order_moneyFund_queryAccountEarningsList____post____code____4000____h5Wealth____fasdfsafds__</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_26' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_26'>通过</button>
+        <div id='div_pt4_26' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_26' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_26'>通过</button>
+        <div id='div_pt4_26' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_26: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_27' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_07___查询用户信息_token错误____https___api_haitoutech_com_____haitou_user_userInfo_queryUserInfoForWealth____post____code____4000____h5Wealth____fasdfsafds__</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_27' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_27'>通过</button>
+        <div id='div_pt4_27' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_27' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_27'>通过</button>
+        <div id='div_pt4_27' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_27: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_28' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_08___用户查询固收账户_token为空____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForRegularEarnings____post____code____4000____h5Wealth______</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_28' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_28'>通过</button>
+        <div id='div_pt4_28' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_28' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_28'>通过</button>
+        <div id='div_pt4_28' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_28: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_29' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_09___用户查询固收_基金总额_token为空____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForAll____post____code____4000____h5Wealth______</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_29' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_29'>通过</button>
+        <div id='div_pt4_29' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_29' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_29'>通过</button>
+        <div id='div_pt4_29' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_29: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_30' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_10___查询余额管理计划用户设置_token为空____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserSetting____post____code____4000____h5Wealth______</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_30' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_30'>通过</button>
+        <div id='div_pt4_30' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_30' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_30'>通过</button>
+        <div id='div_pt4_30' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_30: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_31' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_11___货币基金查询订单列表_token为空____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserAccount____post____code____4000____h5Wealth______</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_31' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_31'>通过</button>
+        <div id='div_pt4_31' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_31' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_31'>通过</button>
+        <div id='div_pt4_31' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_31: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_32' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_12___货币基金用户账户信息_token为空____https___api_haitoutech_com_____haitou_order_moneyFund_queryOrderList____post____code____4000____h5Wealth______</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_32' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_32'>通过</button>
+        <div id='div_pt4_32' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_32' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_32'>通过</button>
+        <div id='div_pt4_32' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_32: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_33' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_13___查询货币基金账户收益列表_token为空____https___api_haitoutech_com_____haitou_order_moneyFund_queryAccountEarningsList____post____code____4000____h5Wealth______</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_33' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_33'>通过</button>
+        <div id='div_pt4_33' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_33' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_33'>通过</button>
+        <div id='div_pt4_33' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_33: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_34' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_14___查询用户信息_token为空____https___api_haitoutech_com_____haitou_user_userInfo_queryUserInfoForWealth____post____code____4000____h5Wealth______</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_34' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_34'>通过</button>
+        <div id='div_pt4_34' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_34' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_34'>通过</button>
+        <div id='div_pt4_34' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_34: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_35' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_15___用户查询固收账户_token错误_端为空____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForRegularEarnings____post____code____4000________fasdfsafds__</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_35' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_35'>通过</button>
+        <div id='div_pt4_35' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_35' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_35'>通过</button>
+        <div id='div_pt4_35' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_35: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_36' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_16___用户查询固收_基金总额_token错误_端为空____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForAll____post____code____4000________fasdfsafds__</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_36' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_36'>通过</button>
+        <div id='div_pt4_36' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_36' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_36'>通过</button>
+        <div id='div_pt4_36' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_36: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_37' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_17___查询余额管理计划用户设置_token错误_端为空____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserSetting____post____code____4000________fasdfsafds__</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_37' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_37'>通过</button>
+        <div id='div_pt4_37' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_37' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_37'>通过</button>
+        <div id='div_pt4_37' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_37: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_38' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_18___货币基金查询订单列表_token错误_端为空____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserAccount____post____code____4000________fasdfsafds__</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_38' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_38'>通过</button>
+        <div id='div_pt4_38' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_38' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_38'>通过</button>
+        <div id='div_pt4_38' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_38: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_39' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_19___货币基金用户账户信息_token错误_端为空____https___api_haitoutech_com_____haitou_order_moneyFund_queryOrderList____post____code____4000________fasdfsafds__</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_39' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_39'>通过</button>
+        <div id='div_pt4_39' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_39' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_39'>通过</button>
+        <div id='div_pt4_39' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_39: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_40' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_20___查询货币基金账户收益列表_token错误_端为空____https___api_haitoutech_com_____haitou_order_moneyFund_queryAccountEarningsList____post____code____4000________fasdfsafds__</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_40' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_40'>通过</button>
+        <div id='div_pt4_40' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_40' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_40'>通过</button>
+        <div id='div_pt4_40' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_40: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_41' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_21___查询用户信息_token错误_端为空____https___api_haitoutech_com_____haitou_user_userInfo_queryUserInfoForWealth____post____code____4000________fasdfsafds__</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_41' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_41'>通过</button>
+        <div id='div_pt4_41' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_41' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_41'>通过</button>
+        <div id='div_pt4_41' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_41: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_42' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_22___用户查询固收账户_token为空_端为空____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForRegularEarnings____post____code____4000__________</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_42' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_42'>通过</button>
+        <div id='div_pt4_42' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_42' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_42'>通过</button>
+        <div id='div_pt4_42' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_42: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_43' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_23___用户查询固收_基金总额_token为空_端为空____https___api_haitoutech_com_____haitou_order_assetsStatistic_queryAssetsStatisticsForAll____post____code____4000__________</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_43' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_43'>通过</button>
+        <div id='div_pt4_43' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_43' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_43'>通过</button>
+        <div id='div_pt4_43' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_43: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_44' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_24___查询余额管理计划用户设置_token为空_端为空____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserSetting____post____code____4000__________</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_44' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_44'>通过</button>
+        <div id='div_pt4_44' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_44' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_44'>通过</button>
+        <div id='div_pt4_44' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_44: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_45' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_25___货币基金查询订单列表_token为空_端为空____https___api_haitoutech_com_____haitou_order_moneyFund_queryUserAccount____post____code____4000__________</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_45' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_45'>通过</button>
+        <div id='div_pt4_45' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_45' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_45'>通过</button>
+        <div id='div_pt4_45' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_45: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_46' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_26___货币基金用户账户信息_token为空_端为空____https___api_haitoutech_com_____haitou_order_moneyFund_queryOrderList____post____code____4000__________</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_46' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_46'>通过</button>
+        <div id='div_pt4_46' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_46' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_46'>通过</button>
+        <div id='div_pt4_46' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_46: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_47' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_27___查询货币基金账户收益列表_token为空_端为空____https___api_haitoutech_com_____haitou_order_moneyFund_queryAccountEarningsList____post____code____4000__________</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_47' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_47'>通过</button>
+        <div id='div_pt4_47' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_47' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_47'>通过</button>
+        <div id='div_pt4_47' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_47: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt4_48' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test2_28___查询用户信息_token为空_端为空____https___api_haitoutech_com_____haitou_user_userInfo_queryUserInfoForWealth____post____code____4000__________</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt4_48' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_48'>通过</button>
+        <div id='div_pt4_48' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt4_48' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt4_48'>通过</button>
+        <div id='div_pt4_48' class="collapse in">
+        <pre style="text-align:left">
+        
+pt4_48: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '登录已失效，请重新登陆', 'code': '4000'}
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+<tr class='errorClass warning'>
+    <td>Test_OrderT</td>
+    <td>订单提交页</td>
+    <td class="text-center">4</td>
+    <td class="text-center">0</td>
+    <td class="text-center">0</td>
+    <td class="text-center">4</td>
+    <td class="text-center">0.92秒</td>
+    <td class="text-center"><a href="javascript:showClassDetail('c5',4)" class="detail" id='c5'>详细</a></td>
+</tr>
+
+    <tr id='et5_1' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test2_1___邮箱用户查询美亚信贷产品____https___api_haitoutech_com_____haitou_order_order_generateOrder____haitou_order_order_cancelOrder____post____code____0000____151____340____10000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et5_1' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et5_1'>错误</button>
+        <div id='div_et5_1' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et5_1' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et5_1'>错误</button>
+        <div id='div_et5_1' class="collapse in">
+        <pre style="text-align:left">
+        
+et5_1: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+6d09f3e0-a398-45b1-8dbb-2f99bd41d6c3
+145837
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '产品额度不足', 'code': '9999'}
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_4_OrderT.py", line 42, in test2
+    orderNo = resp2['data']['orderNo']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et5_2' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test2_2___邮箱用户查询美车贷产品____https___api_haitoutech_com_____haitou_order_order_generateOrder____haitou_order_order_cancelOrder____post____code____0000____151____340____10000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et5_2' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et5_2'>错误</button>
+        <div id='div_et5_2' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et5_2' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et5_2'>错误</button>
+        <div id='div_et5_2' class="collapse in">
+        <pre style="text-align:left">
+        
+et5_2: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+6d09f3e0-a398-45b1-8dbb-2f99bd41d6c3
+145837
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '产品额度不足', 'code': '9999'}
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_4_OrderT.py", line 42, in test2
+    orderNo = resp2['data']['orderNo']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et5_3' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test2_3___手机号用户查询美亚信贷产品____https___api_haitoutech_com_____haitou_order_order_generateOrder____haitou_order_order_cancelOrder____post____code____0000____151____340____10000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et5_3' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et5_3'>错误</button>
+        <div id='div_et5_3' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et5_3' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et5_3'>错误</button>
+        <div id='div_et5_3' class="collapse in">
+        <pre style="text-align:left">
+        
+et5_3: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+6d09f3e0-a398-45b1-8dbb-2f99bd41d6c3
+145837
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '产品额度不足', 'code': '9999'}
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_4_OrderT.py", line 42, in test2
+    orderNo = resp2['data']['orderNo']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='et5_4' class='none'>
+        <td class='errorCase' style="vertical-align: middle"><div class='testcase'>test2_4___手机号用户查询美车贷产品____https___api_haitoutech_com_____haitou_order_order_generateOrder____haitou_order_order_cancelOrder____post____code____0000____151____340____10000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_et5_4' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_et5_4'>错误</button>
+        <div id='div_et5_4' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_et5_4' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_et5_4'>错误</button>
+        <div id='div_et5_4' class="collapse in">
+        <pre style="text-align:left">
+        
+et5_4: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+6d09f3e0-a398-45b1-8dbb-2f99bd41d6c3
+145837
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '产品额度不足', 'code': '9999'}
+Traceback (most recent call last):
+  File "D:\Program Files\Java\Python382\lib\site-packages\ddt.py", line 151, in wrapper
+    return func(self, *args, **kwargs)
+  File "E:\Test\Haitou_win_git\testcase\test_4_OrderT.py", line 42, in test2
+    orderNo = resp2['data']['orderNo']
+KeyError: 'data'
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='errorCase' style="vertical-align: middle"></td>
+    </tr>
+    
+<tr class='passClass warning'>
+    <td>Test_Product</td>
+    <td></td>
+    <td class="text-center">2</td>
+    <td class="text-center">2</td>
+    <td class="text-center">0</td>
+    <td class="text-center">0</td>
+    <td class="text-center">0.58秒</td>
+    <td class="text-center"><a href="javascript:showClassDetail('c6',2)" class="detail" id='c6'>详细</a></td>
+</tr>
+
+    <tr id='pt6_1' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_1___申购基金100元____https___api_haitoutech_com_____haitou_order_moneyFund_generateBuyOrder____post____code____9999____100____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt6_1' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt6_1'>通过</button>
+        <div id='div_pt6_1' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt6_1' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt6_1'>通过</button>
+        <div id='div_pt6_1' class="collapse in">
+        <pre style="text-align:left">
+        
+pt6_1: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+6d09f3e0-a398-45b1-8dbb-2f99bd41d6c3
+6d09f3e0-a398-45b1-8dbb-2f99bd41d6c3
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+/fb1712a02fdc4d04ab510275ebdb31ca.png
+{'clt': 'h5Wealth', 'orderAmount': '100', 'token': '6d09f3e0-a398-45b1-8dbb-2f99bd41d6c3', 'certificationUrl': '/fb1712a02fdc4d04ab510275ebdb31ca.png'}
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '申购金额无效', 'code': '9999'}
+9999
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt6_2' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_2___申购基金200元____https___api_haitoutech_com_____haitou_order_moneyFund_generateBuyOrder____post____msg____重复提交____2000____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt6_2' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt6_2'>通过</button>
+        <div id='div_pt6_2' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt6_2' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt6_2'>通过</button>
+        <div id='div_pt6_2' class="collapse in">
+        <pre style="text-align:left">
+        
+pt6_2: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+6d09f3e0-a398-45b1-8dbb-2f99bd41d6c3
+6d09f3e0-a398-45b1-8dbb-2f99bd41d6c3
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+/ed6862fe825f48be83e2a27dffcfc7da.png
+{'clt': 'h5Wealth', 'orderAmount': '2000', 'token': '6d09f3e0-a398-45b1-8dbb-2f99bd41d6c3', 'certificationUrl': '/ed6862fe825f48be83e2a27dffcfc7da.png'}
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'msg': '重复提交', 'code': '9999'}
+重复提交
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+<tr class='passClass warning'>
+    <td>Test_Product</td>
+    <td>产品列表页</td>
+    <td class="text-center">4</td>
+    <td class="text-center">4</td>
+    <td class="text-center">0</td>
+    <td class="text-center">0</td>
+    <td class="text-center">0.59秒</td>
+    <td class="text-center"><a href="javascript:showClassDetail('c7',4)" class="detail" id='c7'>详细</a></td>
+</tr>
+
+    <tr id='pt7_1' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_1___已认证邮箱用户____https___api_haitoutech_com_____haitou_user_userInfo_queryUserInfoForWealth____post____code____0000____362____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt7_1' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt7_1'>通过</button>
+        <div id='div_pt7_1' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt7_1' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt7_1'>通过</button>
+        <div id='div_pt7_1' class="collapse in">
+        <pre style="text-align:left">
+        
+pt7_1: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+6d09f3e0-a398-45b1-8dbb-2f99bd41d6c3
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'code': '0000', 'data': {'investorAuditStatus': 362, 'realName': '李世兴', 'mobile': '', 'email': 'lidetao@163.com', 'realNameDisplay': '李*兴', 'investorType': 2}}
+362
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt7_2' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_2___未认证手机号用户____https___api_haitoutech_com_____haitou_user_userInfo_queryUserInfoForWealth____post____code____0000____360____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt7_2' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt7_2'>通过</button>
+        <div id='div_pt7_2' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt7_2' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt7_2'>通过</button>
+        <div id='div_pt7_2' class="collapse in">
+        <pre style="text-align:left">
+        
+pt7_2: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+4f3cc1f2-0cb4-4024-b8e3-2f157db7e18b
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'code': '0000', 'data': {'investorAuditStatus': 360, 'mobile': '18610806332', 'email': None, 'investorType': 1}}
+360
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt7_3' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_3___已认证邮箱用户____https___api_haitoutech_com_____haitou_user_userInfo_queryUserInfoForWealth____post____code____0000____362____h5Wealth____loginByEmail______email___lidetao_163_com___password___Aa111111____userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt7_3' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt7_3'>通过</button>
+        <div id='div_pt7_3' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt7_3' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt7_3'>通过</button>
+        <div id='div_pt7_3' class="collapse in">
+        <pre style="text-align:left">
+        
+pt7_3: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+6d09f3e0-a398-45b1-8dbb-2f99bd41d6c3
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'code': '0000', 'data': {'investorAuditStatus': 362, 'realName': '李世兴', 'mobile': '', 'email': 'lidetao@163.com', 'realNameDisplay': '李*兴', 'investorType': 2}}
+362
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+    <tr id='pt7_4' class='hiddenRow'>
+        <td class='passCase' style="vertical-align: middle"><div class='testcase'>test1_4___未认证手机号用户____https___api_haitoutech_com_____haitou_user_userInfo_queryUserInfoForWealth____post____code____0000____360____h5Wealth____loginByMobile______mobile___18610806332___password___Aa111111___regionalCode____86___userType___1___clt___h5Wealth____</div></td>
+        <td style="vertical-align: middle"></td>
+        <td colspan='5' align='center'>
+        <!--默认收起错误信息 -Findyou
+        <button id='btn_pt7_4' type="button"  class="btn btn-xs collapsed" data-toggle="collapse" data-target='#div_pt7_4'>通过</button>
+        <div id='div_pt7_4' class="collapse">  -->
+        <!-- 默认展开错误信息 -Findyou /  修复失败按钮的颜色 -- Gelomen -->
+        <button id='btn_pt7_4' type="button"  class="btn btn-xs" data-toggle="collapse" data-target='#div_pt7_4'>通过</button>
+        <div id='div_pt7_4' class="collapse in">
+        <pre style="text-align:left">
+        
+pt7_4: 测试开始！
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+4f3cc1f2-0cb4-4024-b8e3-2f157db7e18b
+D:\Program Files\Java\Python382\lib\site-packages\urllib3\connectionpool.py:979: InsecureRequestWarning: Unverified HTTPS request is being made to host 'api.haitoutech.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  warnings.warn(
+{'code': '0000', 'data': {'investorAuditStatus': 360, 'mobile': '18610806332', 'email': None, 'investorType': 1}}
+360
+测试完成！
+
+
+        </pre>
+        </div>
+        </td>
+        <td class='passCase' style="vertical-align: middle"></td>
+    </tr>
+    
+<tr id='total_row' class="text-center active">
+    <td colspan='2'>总计</td>
+    <td>83</td>
+    <td>51</td>
+    <td>0</td>
+    <td>32</td>
+    <td>7.12秒</td>
+    <td>通过率：61.45%</td>
+</tr>
+</table>
+
+<div id='ending'>&nbsp;</div>
+    <div id="toTop" style=" position:fixed;right:50px; bottom:30px; width:20px; height:20px;cursor:pointer; display: none">
+    <a><span class="glyphicon glyphicon-eject" style = "font-size:30px;" aria-hidden="true">
+    </span></a></div>
+    
+</body>
+</html>
